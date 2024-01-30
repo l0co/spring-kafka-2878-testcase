@@ -13,7 +13,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class DemoApplicationTests {
 
     @Autowired private KafkaService kafkaService;
-    @Autowired private KafkaListener kafkaListener;
 
 	@Test
 	void shouldBeTransactional() {
@@ -23,7 +22,7 @@ class DemoApplicationTests {
 	@Test
 	void shouldProcessEvent() throws InterruptedException {
         kafkaService.sendTransactionally();
-        assertTrue(kafkaListener.latch.await(30, TimeUnit.SECONDS));
+        assertTrue(KafkaConfig.latch.await(30, TimeUnit.SECONDS));
 	}
 
 }

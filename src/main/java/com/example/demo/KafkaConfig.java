@@ -12,6 +12,8 @@ import org.springframework.kafka.listener.AfterRollbackProcessor;
 import org.springframework.kafka.listener.DefaultAfterRollbackProcessor;
 import org.springframework.util.backoff.BackOffExecution;
 
+import java.util.concurrent.CountDownLatch;
+
 /**
  * @author Lukasz Frankowski
  */
@@ -20,12 +22,17 @@ public class KafkaConfig {
 
     public static final Logger logger = LoggerFactory.getLogger(KafkaConfig.class);
 
+    public static CountDownLatch latch = new CountDownLatch(1);
+
     @Bean
     public AfterRollbackProcessor<Object, Object> afterRollbackProcessor(
         KafkaTemplate<?, ?> kafkaTemplate
     ) {
         return new DefaultAfterRollbackProcessor<>(
-            (record, exception) -> logger.info("Recovering: {}", record.value(), exception),
+            (record, exception) -> {
+                logger.info("Recovering: {}", record.value(), exception);
+                latch.countDown();
+            },
             () -> () -> BackOffExecution.STOP,
             kafkaTemplate,
             true

@@ -5,8 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.CountDownLatch;
-
 /**
  * @author Lukasz Frankowski
  */
@@ -15,7 +13,6 @@ public class KafkaListener {
 
     public static final Logger logger = LoggerFactory.getLogger(KafkaListener.class);
 
-    public CountDownLatch latch = new CountDownLatch(1);
     private int numberOfRetries = 0;
 
     @org.springframework.kafka.annotation.KafkaListener(topics = "topic")
@@ -27,7 +24,7 @@ public class KafkaListener {
             throw new RuntimeException("Expected");
         }
         logger.info("Continuing...");
-        latch.countDown();
+        KafkaConfig.latch.countDown();
     }
 
 }
